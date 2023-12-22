@@ -1,0 +1,51 @@
+package com.aulamatriz.app.user.serviceImp;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.aulamatriz.app.user.dto.UsuarioDTO;
+import com.aulamatriz.app.user.model.UsuarioEntity;
+import com.aulamatriz.app.user.repository.UsuarioRepository;
+import com.aulamatriz.app.user.service.UsuarioService;
+
+import lombok.AllArgsConstructor;
+
+@Service
+@AllArgsConstructor
+public class UsuarioServiceImp implements UsuarioService {
+	
+	private final UsuarioRepository usuarioRepository;
+	
+	@Override
+	public ResponseEntity guardarUsuario(UsuarioDTO usuarioDTO) {
+		
+		List<UsuarioEntity> usuarioEntities = usuarioRepository.findByEmail(usuarioDTO.getEmail());
+		
+		if(usuarioEntities.size() == 0) {
+			UsuarioEntity usuarioEntity = UsuarioEntity
+					.builder()
+					.nombre(usuarioDTO.getNombre())
+					.apellido(usuarioDTO.getApellido())
+					.userName(usuarioDTO.getUserName())
+					.password(usuarioDTO.getPassword())
+					.email(usuarioDTO.getEmail())
+					.telefono(usuarioDTO.getTelefono())
+					.build();
+				
+		
+			usuarioRepository.save(usuarioEntity);
+			return ResponseEntity.status(HttpStatus.CREATED).body("fue creado con exto el usuario");
+		}else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("el correo ya existe");
+			
+		}
+		
+	}
+	
+
+	
+
+}
